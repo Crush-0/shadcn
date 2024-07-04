@@ -1,12 +1,14 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { CalendarIcon, PersonStandingIcon } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -53,6 +55,9 @@ export default function SignupPage(){
     })
 
     const accountType = form.watch("accountType");
+
+    const birthdayFromDate = new Date()
+    birthdayFromDate.setFullYear(birthdayFromDate.getFullYear() - 120);
 
     function handleSubmit() {
         console.log("Log in successful");
@@ -130,25 +135,40 @@ export default function SignupPage(){
                         </FormField>
                     </>
                     }
-                        <FormField 
-                        control={form.control} name="birthday" render={({field})=>(
-                            <FormItem className="flex flex-col">
-                                <FormLabel>Date Of Birthday</FormLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <FormControl>
-                                            <Button variant="outline" className="normal-case justify-between pr-1.5">
-                                                <span>Pick a date</span>
-                                                <CalendarIcon></CalendarIcon>
-                                            </Button>
-                                        </FormControl>
-                                    </PopoverTrigger>
-                                </Popover>
-                                <FormMessage></FormMessage>
-                            </FormItem>
-                        )}
-                        >
-                        </FormField>
+                    <FormField 
+                    control={form.control} name="birthday" render={({field})=>(
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Date Of Birthday</FormLabel>
+                            <Popover >
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button variant="outline" className="normal-case justify-between pr-1.5">
+                                            {!!field.value ? format(field.value,"PPP") : <span>Pick a date</span>}
+                                            <CalendarIcon></CalendarIcon>
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent align="start" className="w-full">
+                                    <Calendar 
+                                    mode="single" 
+                                    defaultMonth={field.value} 
+                                    selected={field.value} 
+                                    onSelect={field.onChange}
+                                    fixedWeeks
+                                    weekStartsOn={1}
+                                    fromDate={birthdayFromDate}
+                                    toDate={new Date()}
+                                    captionLayout="dropdown-buttons"
+                                    >
+
+                                    </Calendar>
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage></FormMessage>
+                        </FormItem>
+                    )}
+                    >
+                    </FormField>
                     <Button type="submit">
                         Sign up
                     </Button>
